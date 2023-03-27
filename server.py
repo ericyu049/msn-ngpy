@@ -1,5 +1,6 @@
 import socketio
 import eventlet
+import time
 
 sio = socketio.Server(logger=False, cors_allowed_origins=[
                       'http://localhost:4200'])
@@ -26,7 +27,7 @@ def disconnect(sid):
 # Return a map containing all the connected users.
 
 
-@sio.on('getClientslist')
+@sio.on('clients')
 def getClients(sid):
     sio.emit('client_results', clients)
 
@@ -42,7 +43,7 @@ def setNickname(sid, newname):
 
 @sio.on('getNickname')
 def getNickname(sid):
-    sio.emit('receiveNickname', clients[sid], room=sid)
+    return clients[sid]
 
 # A message function. sid is the sender. This function will use send to broadcast the message data to the target.
 
@@ -51,6 +52,21 @@ def getNickname(sid):
 def message(sid, data, target):
     sender = {'sid': sid, 'nickname': clients[sid]}
     sio.send({'sender': sender, 'message': data}, to=target)
+    if target != 'lobby':
+        sio.send({'sender': sender, 'message': data}, to=sid)
+    record = {'timestamp': time.time(), 'sender': sender, 'to': target,
+              'message': data}
+    messages.append(record)
+
+
+# send a nudge to target client
+
+@sio.on('nudge')
+def nudge(sid, target):
+    print('nudge target: ', target)
+    sender = {'sid': sid, 'nickname': clients[sid]}
+    sio.emit('got_nudged', {'sender': sender}, room=target['sid'])
+
 
 # Enter the user to the main lobby.
 
@@ -60,14 +76,19 @@ def enterLobby(sid):
     print(sid, 'has entered the chat.')
     sio.enter_room(sid, 'lobby')
 
-# Send a message to the main lobby.
+# Getting message history based on the target room.
 
 
-@sio.on('message_lobby')
-def messageLobby(sid, data):
-    sio.emit('lobby_message', {'sender': sid, 'message': data}, room='lobby')
-
-# Receive messages
+@sio.on('history')
+def getMessageHistory(sid, target):
+    if target == 'lobby':
+        result_messages = list(
+            filter(lambda message: (message['to'] == 'lobby'), messages))
+        return result_messages
+    else:
+        result_messages = list(filter(lambda message: ((message['to'] == sid and message['sender']['sid'] == target) or (
+            message['sender']['sid'] == sid and message['to'] == target)), messages))
+        return result_messages
 
 
 # Main method.
