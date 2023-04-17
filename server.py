@@ -63,7 +63,6 @@ def message(sid, data, target):
 
 @sio.on('nudge')
 def nudge(sid, target):
-    print('nudge target: ', target)
     sender = {'sid': sid, 'nickname': clients[sid]}
     sio.emit('got_nudged', {'sender': sender}, room=target['sid'])
 
