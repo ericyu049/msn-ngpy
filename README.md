@@ -2,6 +2,8 @@
 
 This project is a python server for the recreation of the classic Windows live messenger. This server utilizes python-socketio, a python version of Socket.IO library to handle all connections and events as well as broadcasting functions for client messenging.
 
+![alt text](https://cdn.ai-amadeus.com/portfolio/projects/msn.png)
+
 ## How to run
 
 Make sure you have Python3 installed and all required dependencies
