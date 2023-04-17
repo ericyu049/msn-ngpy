@@ -2,8 +2,8 @@ import socketio
 import eventlet
 import time
 
-sio = socketio.Server(logger=False, cors_allowed_origins=[
-                      'http://localhost:4200'])
+origins = ['http://localhost:4200']
+sio = socketio.Server(logger=False, cors_allowed_origins=origins)
 
 clients = {}
 messages = []
