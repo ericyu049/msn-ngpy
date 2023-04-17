@@ -1,5 +1,5 @@
 kind: pipeline
-name: msn
+name: msn-server
 type: docker
 
 steps:
@@ -9,16 +9,16 @@ steps:
     - name: dockersock
       path: /var/run/docker.sock
     commands:
-    - docker build . -t msn:latest
+    - docker build . -t msn-server:latest
   - name: Start Container
     image: docker:dind
     volumes:
     - name: dockersock
       path: /var/run/docker.sock
     commands:
-    - docker stop msn || true
-    - docker rm msn || true
-    - docker run --name msn --network=bridge -p 8084:8000 -d msn:latest
+    - docker stop msn-server || true
+    - docker rm msn-server || true
+    - docker run --name msn-server --network=bridge -p 8084:8000 -d msn-server:latest
 
 
 volumes:
