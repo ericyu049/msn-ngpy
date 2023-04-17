@@ -1,0 +1,27 @@
+kind: pipeline
+name: msn
+type: docker
+
+steps:
+  - name: Build Docker Image
+    image: docker:dind
+    volumes:
+    - name: dockersock
+      path: /var/run/docker.sock
+    commands:
+    - docker build . -t msn:latest
+  - name: Start Container
+    image: docker:dind
+    volumes:
+    - name: dockersock
+      path: /var/run/docker.sock
+    commands:
+    - docker stop msn || true
+    - docker rm msn || true
+    - docker run --name msn --network=bridge -p 8084:8000 -d msn:latest
+
+
+volumes:
+  - name: dockersock
+    host:
+      path: /var/run/docker.sock
