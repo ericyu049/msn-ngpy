@@ -51,9 +51,16 @@ def getNickname(sid):
 @sio.on('send_message')
 def message(sid, data, target):
     sender = {'sid': sid, 'nickname': clients[sid]}
-    sio.send({'sender': sender, 'message': data, 'room': 'lobby'}, to=target)
+
+    # Sends the message to the target room or target user.
+
+    sio.send({'sender': sender, 'message': data, 'room': target}, to=target)
+
+    # If the target is not the lobby, sends a copy the message to the sender
+
     if target != 'lobby':
         sio.send({'sender': sender, 'message': data, 'room': sid}, to=sid)
+        
     record = {'timestamp': time.time(), 'sender': sender, 'to': target,
               'message': data}
     messages.append(record)
