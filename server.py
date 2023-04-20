@@ -59,8 +59,8 @@ def message(sid, data, target):
     # If the target is not the lobby, sends a copy the message to the sender
 
     if target != 'lobby':
-        sio.send({'sender': sender, 'message': data, 'room': sid}, to=sid)
-        
+        sio.send({'sender': sender, 'message': data, 'room': target}, to=sid)
+
     record = {'timestamp': time.time(), 'sender': sender, 'to': target,
               'message': data}
     messages.append(record)
