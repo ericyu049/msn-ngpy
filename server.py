@@ -13,7 +13,7 @@ messages = []
 @sio.on('connect')
 def connect(sid, environ):
     print('Connected: ', sid)
-    clients[sid] = ''
+    clients[sid] = ('', '')
 
 # Disconnect user from the socket.IO server, and remove them from the clients map.
 
@@ -36,30 +36,46 @@ def getClients(sid):
 
 @sio.on('setNickname')
 def setNickname(sid, newname):
-    clients[sid] = newname
+    clients[sid][0] = newname
+
+
+# Setting custom message for the connected user
+@sio.on('setCustomMessage')
+def setCustomMessage(sid, customMessage):
+    clients[sid][1] = customMessage
+
 
 # Getting the nickname of the connected user.
 
 
 @sio.on('getNickname')
 def getNickname(sid):
-    return clients[sid]
+    return clients[sid][0]
+
+# Getting the custom message of the connected user
+
+
+@sio.on('getCustomMessage')
+def getCustomMessage(sid):
+    return clients[sid][1]
 
 # A message function. sid is the sender. This function will use send to broadcast the message data to the target.
 
 
 @sio.on('send_message')
 def message(sid, data, target):
-    sender = {'sid': sid, 'nickname': clients[sid]}
+    sender = {'sid': sid, 'nickname': clients[sid][0]}
 
     # Sends the message to the target room or target user.
 
-    sio.send({'sender': sender, 'message': data, 'isLobby': True, 'self_copy': False}, to=target)
+    sio.send({'sender': sender, 'message': data,
+             'isLobby': True, 'self_copy': False}, to=target)
 
     # If the target is not the lobby, sends a copy the message to the sender
 
     if target != 'lobby':
-        sio.send({'sender': sender, 'message': data, 'isLobby': False, 'self_copy': True}, to=sid)
+        sio.send({'sender': sender, 'message': data,
+                 'isLobby': False, 'self_copy': True}, to=sid)
 
     record = {'timestamp': time.time(), 'sender': sender, 'to': target,
               'message': data}
@@ -70,7 +86,7 @@ def message(sid, data, target):
 
 @sio.on('nudge')
 def nudge(sid, target):
-    sender = {'sid': sid, 'nickname': clients[sid]}
+    sender = {'sid': sid, 'nickname': clients[sid][0]}
     sio.emit('got_nudged', {'sender': sender}, room=target['sid'])
 
 
