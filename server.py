@@ -36,13 +36,13 @@ def getClients(sid):
 
 @sio.on('setNickname')
 def setNickname(sid, newname):
-    clients[sid][0] = newname
+    clients[sid] = (newname, clients[sid][1])
 
 
 # Setting custom message for the connected user
 @sio.on('setCustomMessage')
 def setCustomMessage(sid, customMessage):
-    clients[sid][1] = customMessage
+    clients[sid] = (clients[sid][0], customMessage)
 
 
 # Getting the nickname of the connected user.
