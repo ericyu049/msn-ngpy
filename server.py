@@ -43,6 +43,7 @@ def setNickname(sid, newname):
 @sio.on('setCustomMessage')
 def setCustomMessage(sid, customMessage):
     clients[sid] = (clients[sid][0], customMessage)
+    print('emitting clients results')
     sio.emit('client_results', clients)
 
 
