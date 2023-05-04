@@ -117,6 +117,6 @@ def getMessageHistory(sid, target):
 
 # Main method.
 if __name__ == '__main__':
-    print('Starting SocketIO server...')
+    print('Starting SocketIO server....')
     app = socketio.WSGIApp(sio)
     eventlet.wsgi.server(eventlet.listen(('', 8000)), app)
