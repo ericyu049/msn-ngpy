@@ -66,7 +66,7 @@ def getCustomMessage(sid):
 
 @sio.on('send_message')
 def message(sid, data, target):
-    sender = {'sid': sid, 'nickname': clients[sid][0]}
+    sender = {'sid': sid, 'nickname': clients[sid]}
 
     # Sends the message to the target room or target user.
 
