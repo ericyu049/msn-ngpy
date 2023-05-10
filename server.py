@@ -70,14 +70,9 @@ def message(sid, data, target):
 
     # Sends the message to the target room or target user.
 
-    sio.send({'sender': sender, 'message': data,
-             'isLobby': True, 'self_copy': False}, to=target)
+    sio.send({'sender': sender, 'message': data, 'self_copy': False}, to=target)
 
-    # If the target is not the lobby, sends a copy the message to the sender
-
-    if target != 'lobby':
-        sio.send({'sender': sender, 'message': data,
-                 'isLobby': False, 'self_copy': True}, to=sid)
+    sio.send({'sender': sender, 'message': data, 'self_copy': True}, to=sid)
 
     record = {'timestamp': time.time(), 'sender': sender, 'to': target,
               'message': data}
